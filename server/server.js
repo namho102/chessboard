@@ -1,9 +1,35 @@
-var http = require('http');
-
 var os = require('os');
 var ifaces = os.networkInterfaces();
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var mqtt = require('mqtt')  
+var client = mqtt.connect('mqtt://broker.hivemq.com')
 
 var hostname, port = 3000;
+
+
+app.get('/', function(req, res){
+  res.sendfile('index.html');
+});
+
+client.on('connect', () => {  
+
+  io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('message', function(msg){
+    console.log('message: ' + msg);
+    //socket
+    io.emit('message', msg);
+    //mqtt
+    client.publish('notifacation', msg);
+
+  });
+});
+  
+})
+
+
 
 Object.keys(ifaces).forEach(function (ifname) {
   var alias = 0;
@@ -26,14 +52,7 @@ Object.keys(ifaces).forEach(function (ifname) {
   });
 });
 
-// var port = 3000;
 
-var server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
-});
-
-server.listen(port, () => {
+http.listen(port, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
