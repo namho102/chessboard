@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/chessboard.min.css">
+    <script src="js/chessboard.min.js"></script>
+</head>
+
+<body>
+	<div id="board" style="width: 400px"></div>
+
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        var board = ChessBoard('board', 'start');
+        var socket = io();
+        $('form').submit(function() {
+            socket.emit('message', $('#m').val());
+            $('#m').val('');
+            return false;
+        });
+
+        socket.on('message', function(msg) {
+           
+        });
+    </script>
+</body>
+
+</html>

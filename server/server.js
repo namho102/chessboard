@@ -1,6 +1,7 @@
 var os = require('os');
 var ifaces = os.networkInterfaces();
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var mqtt = require('mqtt')  
@@ -17,7 +18,6 @@ var port = new SerialPort("/dev/ttyACM0", {
 
 
 function processData(str) {
-
   if(str.length >= 16) {
     var len = str.length - 1;
     var size = Math.sqrt(str.length - 1);
@@ -41,19 +41,16 @@ port.on('data', function (data) {
 
 Object.keys(ifaces).forEach(function (ifname) {
   var alias = 0;
-
   ifaces[ifname].forEach(function (iface) {
     if ('IPv4' !== iface.family || iface.internal !== false) {
       // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
       return;
     }
-
     if (alias >= 1) {
       // this single interface has multiple ipv4 addresses
       console.log(ifname + ':' + alias, iface.address);
     } else {
       // this interface has only one ipv4 adress
-      // console.log(iface.address);
       hostname = iface.address;
     }
     ++alias;
@@ -61,9 +58,11 @@ Object.keys(ifaces).forEach(function (ifname) {
 });
 
 
-app.get('/', function(req, res){
-  res.sendfile('index.html');
-});
+app.use(express.static('public'));
+
+// app.get('/', function(req, res) {
+//   res.sendfile('index.html');
+// });
 
 client.on('connect', () => {  
 
