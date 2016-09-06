@@ -6,30 +6,38 @@ var io = require('socket.io')(http);
 var mqtt = require('mqtt')  
 var client = mqtt.connect('mqtt://broker.hivemq.com')
 
-var hostname, port = 3000;
+var hostname;
 
+var SerialPort = require("serialport");
 
-app.get('/', function(req, res){
-  res.sendfile('index.html');
+var port = new SerialPort("/dev/ttyACM0", {
+  baudRate: 9600,
+  parser: SerialPort.parsers.readline('\n')
 });
 
-client.on('connect', () => {  
 
-  io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('message', function(msg){
-    console.log('message: ' + msg);
-    //socket
-    io.emit('message', msg);
-    //mqtt
-    client.publish('notifacation', msg);
+function processData(str) {
 
-  });
-});
+  if(str.length >= 16) {
+    var len = str.length - 1;
+    var size = Math.sqrt(str.length - 1);
+    var x = new Array();
+    for (var i = 0; i < size; i++) {
+      x[i] = new Array(size);
+    }
+
+    for (var i = 0; i < len; i++) {
+      x[~~(i / size)][i % size] = parseInt(str[i]);
+    }
+    // console.log(x);
+  }
   
-})
+}
 
-
+port.on('data', function (data) {
+  // console.log(data.length)
+  processData(data.toString());
+});
 
 Object.keys(ifaces).forEach(function (ifname) {
   var alias = 0;
@@ -46,13 +54,34 @@ Object.keys(ifaces).forEach(function (ifname) {
     } else {
       // this interface has only one ipv4 adress
       // console.log(iface.address);
-    	hostname = iface.address;
+      hostname = iface.address;
     }
     ++alias;
   });
 });
 
 
-http.listen(port, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.get('/', function(req, res){
+  res.sendfile('index.html');
+});
+
+client.on('connect', () => {  
+
+  io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('message', function(msg){
+    console.log('message: ' + msg);
+    //socket
+    io.emit('message', msg);
+    //mqtt
+    client.publish('notification', msg);
+
+  });
+});
+  
+})
+
+
+http.listen(3000, () => {
+  console.log(`Server running at http://${hostname}:3000/`);
 });

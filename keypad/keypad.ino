@@ -1,5 +1,5 @@
-int row[]={2,3,4,5};// Defining row pins of keypad connected to Aeduino pins
-int col[]={8,9,10,11};//Defining column pins of keypad connected to Arduino
+int row[]={8,9,10,11};
+int col[]={2,3,4,5};// HIGH
 int i,j; // Two counter variables to count inside for loop
 int col_scan; // Variable to hold value of scanned columns
 
@@ -10,13 +10,7 @@ int keymap[4][4] =
   {0, 0, 0, 0}, 
   {0, 0, 0, 0}, 
 };
-int zeromap[4][4] =  
-{
-  {0, 0, 0, 0}, 
-  {0, 0, 0, 0}, 
-  {0, 0, 0, 0}, 
-  {0, 0, 0, 0}, 
-};
+
 
 
 void setup()
@@ -83,38 +77,4 @@ void loop()
   
   
 }
-void keypress(int i, int j)
-{
-  if(i==0&&j==0)
-    Serial.println("1");
-  if(i==0&&j==1)
-    Serial.println("2");
-  if(i==0&&j==2)
-    Serial.println("3");
-  if(i==0&&j==3)
-    Serial.println("A");
-  if(i==1&&j==0)
-    Serial.println("4");
-  if(i==1&&j==1)
-    Serial.println("5");
-  if(i==1&&j==2)
-    Serial.println("6");
-  if(i==1&&j==3)
-    Serial.println("B");
-  if(i==2&&j==0)
-    Serial.println("7");
-  if(i==2&&j==1)
-    Serial.println("8");
-  if(i==2&&j==2)
-    Serial.println("9");
-  if(i==2&&j==3)
-    Serial.println("C");
-  if(i==3&&j==0)
-    Serial.println("*");
-  if(i==3&&j==1)
-    Serial.println("0");
-  if(i==3&&j==2)
-    Serial.println("#");
-  if(i==3&&j==3)
-    Serial.println("D");
-}
+

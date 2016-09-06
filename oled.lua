@@ -1,14 +1,12 @@
 sda = 1 -- SDA Pin
 scl = 2 -- SCL Pin
+str0 = "hello world"
 
-ssid="wtf"
-ssid_password="hoangnamviethoa"
+ssid = "viettel huongngoclan"
+ssid_password = "123456789"
 
 port = 1883
 host = "broker.hivemq.com"
-
-m = mqtt.Client("ESP8266_"..node.chipid(), 120, "", "")
-m:lwt("notification", "false", 1, 1)
 
 wifi.setmode(wifi.STATION)
 wifi.sta.config(ssid,ssid_password)
@@ -16,6 +14,9 @@ wifi.sta.connect()
 tmr.delay(1000000)   -- wait 1,000,000 us = 1 second
 print(wifi.sta.status())
 print(wifi.sta.getip())
+
+m = mqtt.Client("ESP8266_"..node.chipid(), 120, "", "")
+m:lwt("notification", "false", 1, 1)
 
 m:connect(host, port, 0, function(conn)
   print("connected")
@@ -27,14 +28,15 @@ end)
 m:on("offline", function(con) 
   print ("reconecting") 
   tmr.alarm(1, 10000, 0, function()
-  m:connect(host, port, 0)
+    m:connect(host, port, 0)
   end)
 end)
 
 m:on("message", function(conn, topic, data) 
-  print(topic .. ":" ..data ) 
+  print(topic .. ": " ..data ) 
   if data ~= nil then
-    write_OLED(data)
+    str0 = data
+--    write_OLED(data)
   end
 end)
          
@@ -50,18 +52,23 @@ function init_OLED(sda,scl) --Set up the u8glib lib
 end
 
 
-
-function write_OLED(str) -- Write Display
+function write_OLED() -- Write Display
    disp:firstPage()
    repeat
-         
-     disp:drawStr(5, 30, str)
 
+     disp:drawStr(5, 10, str0)
+   
    until disp:nextPage() == false
    
 end
 
   
-init_OLED(sda,scl)
+init_OLED(sda, scl)
+
+tmr.alarm(0, 1000, 1, function()
+    print(str0)
+    write_OLED()
+
+end)
 
 
