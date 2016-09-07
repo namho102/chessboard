@@ -1,6 +1,6 @@
-int row[]={8,9,10,11};
-int col[]={2,3,4,5};// HIGH
-int i,j; // Two counter variables to count inside for loop
+int row[]= {14, 15, 16, 17};
+int col[]= {2, 3, 4, 5};// HIGH
+int i, j; // Two counter variables to count inside for loop
 int col_scan; // Variable to hold value of scanned columns
 
 int keymap[4][4] = 
