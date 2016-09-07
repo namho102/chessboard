@@ -7,6 +7,9 @@ var io = require('socket.io')(http);
 var mqtt = require('mqtt')  
 var client = mqtt.connect('mqtt://broker.hivemq.com')
 var SerialPort = require("serialport");
+var events = require('events');
+
+var eventEmitter = new events.EventEmitter();
 
 var hostname;
 const initialMatrix = [ [1, 1, 1, 1, 1, 1, 1, 1], 
@@ -64,11 +67,34 @@ function processData(str) {
         }
         else {
           tempFEN[ms.X][ms.Y] = tempPiece;
+
+          eventEmitter.emit('fenChange', matrixToFEN(tempFEN));
         }
       }
       //2
       else {
-        
+        // 1 and -1
+        // var src = movingSquare.filter(function(ms) {
+        //   return ms.val == -1;
+        // })[0];
+        // var des = movingSquare.filter(function(ms) {
+        //   return ms.val == 1;
+        // })[0];
+
+        var src = movingSquare.find(function(ms) {
+          return ms.val == -1;
+        })
+
+        var des = movingSquare.find(function(ms) {
+          return ms.val == 1;
+        })
+
+        // console.log(src, des)
+        tempPiece = tempFEN[src.X][src.Y];
+        tempFEN[src.X][src.Y] = '1';
+        tempFEN[des.X][des.Y] = tempPiece;
+
+        eventEmitter.emit('fenChange', matrixToFEN(tempFEN));
       }
 
       console.log(tempFEN)
@@ -93,6 +119,19 @@ function subMatrix(x, tempMatrix) {
   return diff;
 }
 
+function matrixToFEN(matrix) {
+  var fen = "";
+  for(var i = 0; i < 8; i++) {
+    for(var j = 0; j < 8; j++) {
+      fen = fen + tempFEN[i][j];
+    }
+    if(i != 7) {
+      fen = fen + "/";
+    }
+  }
+
+  return fen;
+}
 port.on('data', function (data) {
   // console.log(data.length)
   processData(data.toString());
@@ -127,14 +166,13 @@ client.on('connect', () => {
 
   io.on('connection', function(socket){
   console.log('a user connected');
-  socket.on('message', function(msg){
-    console.log('message: ' + msg);
-    //socket
-    io.emit('message', msg);
-    //mqtt
-    client.publish('notification', msg);
 
+  eventEmitter.on('fenChange', function(fen) {
+    // console.log(fen)
+    io.emit('fenChange', fen);
   });
+  
+
 });
   
 })

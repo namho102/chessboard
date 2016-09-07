@@ -19,14 +19,10 @@
     <script>
         var board = ChessBoard('board', 'start');
         var socket = io();
-        $('form').submit(function() {
-            socket.emit('message', $('#m').val());
-            $('#m').val('');
-            return false;
-        });
 
-        socket.on('message', function(msg) {
-           
+
+        socket.on('fenChange', function(fen) {
+           board.position(fen);
         });
     </script>
 </body>
