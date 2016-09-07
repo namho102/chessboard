@@ -132,6 +132,7 @@ function matrixToFEN(matrix) {
 
   return fen;
 }
+
 port.on('data', function (data) {
   // console.log(data.length)
   processData(data.toString());
@@ -158,9 +159,6 @@ Object.keys(ifaces).forEach(function (ifname) {
 
 app.use(express.static('public'));
 
-// app.get('/', function(req, res) {
-//   res.sendfile('index.html');
-// });
 
 client.on('connect', () => {  
 

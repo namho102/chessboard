@@ -20,7 +20,6 @@
         var board = ChessBoard('board', 'start');
         var socket = io();
 
-
         socket.on('fenChange', function(fen) {
            board.position(fen);
         });
