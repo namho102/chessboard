@@ -6,19 +6,39 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var mqtt = require('mqtt')  
 var client = mqtt.connect('mqtt://broker.hivemq.com')
+var SerialPort = require("serialport");
 
 var hostname;
+const initialMatrix = [ [1, 1, 1, 1, 1, 1, 1, 1], 
+                        [1, 1, 1, 1, 1, 1, 1, 1], 
+                        [0, 0, 0, 0, 0, 0, 0, 0], 
+                        [0, 0, 0, 0, 0, 0, 0, 0], 
+                        [0, 0, 0, 0, 0, 0, 0, 0], 
+                        [0, 0, 0, 0, 0, 0, 0, 0], 
+                        [1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1] ];
 
-var SerialPort = require("serialport");
+const initialFEN  = [ ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], 
+                      ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], 
+                      ['1', '1', '1', '1', '1', '1', '1', '1'],
+                      ['1', '1', '1', '1', '1', '1', '1', '1'],
+                      ['1', '1', '1', '1', '1', '1', '1', '1'],
+                      ['1', '1', '1', '1', '1', '1', '1', '1'],
+                      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], 
+                      ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'] ];
+
+
+var tempMatrix = initialMatrix;
+var tempFEN= initialFEN;
+var tempPiece;
 
 var port = new SerialPort("/dev/ttyACM0", {
   baudRate: 9600,
   parser: SerialPort.parsers.readline('\n')
 });
 
-
 function processData(str) {
-  if(str.length >= 16) {
+  if(str.length >= 64) {
     var len = str.length - 1;
     var size = Math.sqrt(str.length - 1);
     var x = new Array();
@@ -30,8 +50,47 @@ function processData(str) {
       x[~~(i / size)][i % size] = parseInt(str[i]);
     }
     // console.log(x);
+    var movingSquare = subMatrix(x, tempMatrix)
+    if(movingSquare.length != 0) {
+      tempMatrix = x;
+      console.log(movingSquare);
+      //1
+      if(movingSquare.length == 1) {
+        var ms = movingSquare[0];
+        if(ms.val == -1) {
+          tempPiece = tempFEN[ms.X][ms.Y];
+          tempFEN[ms.X][ms.Y] = '1';
+          
+        }
+        else {
+          tempFEN[ms.X][ms.Y] = tempPiece;
+        }
+      }
+      //2
+      else {
+        
+      }
+
+      console.log(tempFEN)
+    }
+    else console.log('no diff');
+
   }
-  
+}
+
+function subMatrix(x, tempMatrix) {
+  var diff = [];
+  for(var i = 0; i < 8; i++) {
+    for(var j = 0; j < 8; j++) {
+      var d = x[i][j] - tempMatrix[i][j];
+      if(d != 0) {
+         diff[diff.length] = {val: d, X: i, Y: j}; 
+      }
+    }
+
+  }
+
+  return diff;
 }
 
 port.on('data', function (data) {
