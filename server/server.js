@@ -27,13 +27,13 @@ const initialFEN  = [ ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                       ['1', '1', '1', '1', '1', '1', '1', '1'],
                       ['1', '1', '1', '1', '1', '1', '1', '1'],
                       ['1', '1', '1', '1', '1', '1', '1', '1'],
-                      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], 
-                      ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'] ];
+                      ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]; 
 
 
 var tempMatrix = initialMatrix;
 var tempFEN= initialFEN;
-var tempPiece;
+var tempPiece, killedPiece;
 
 var port = new SerialPort("/dev/ttyACM0", {
   baudRate: 9600,
@@ -61,13 +61,19 @@ function processData(str) {
       if(movingSquare.length == 1) {
         var ms = movingSquare[0];
         if(ms.val == -1) {
-          tempPiece = tempFEN[ms.X][ms.Y];
-          tempFEN[ms.X][ms.Y] = '1';
+          if(tempPiece == null) {
+            tempPiece = tempFEN[ms.X][ms.Y];
+            tempFEN[ms.X][ms.Y] = '1';
+          }
+          // else {
+          //   killedPiece = tempFEN[ms.X][ms.Y];
+          // }
+          
           
         }
         else {
           tempFEN[ms.X][ms.Y] = tempPiece;
-
+          tempPiece = null;
           eventEmitter.emit('fenChange', matrixToFEN(tempFEN));
         }
       }
@@ -94,6 +100,7 @@ function processData(str) {
         tempFEN[src.X][src.Y] = '1';
         tempFEN[des.X][des.Y] = tempPiece;
 
+        tempPiece = null;
         eventEmitter.emit('fenChange', matrixToFEN(tempFEN));
       }
 
