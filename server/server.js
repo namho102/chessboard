@@ -97,7 +97,7 @@ function processData(str) {
         eventEmitter.emit('fenChange', matrixToFEN(tempFEN));
       }
 
-      console.log(tempFEN)
+      // console.log(tempFEN)
     }
     else console.log('no diff');
 
