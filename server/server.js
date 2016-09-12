@@ -4,8 +4,8 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var mqtt = require('mqtt')  
-var client = mqtt.connect('mqtt://broker.hivemq.com')
+// var mqtt = require('mqtt')  
+// var client = mqtt.connect('mqtt://broker.hivemq.com')
 var SerialPort = require("serialport");
 var events = require('events');
 
@@ -167,9 +167,9 @@ Object.keys(ifaces).forEach(function (ifname) {
 app.use(express.static('public'));
 
 
-client.on('connect', () => {  
+// client.on('connect', () => {  
 
-  io.on('connection', function(socket){
+io.on('connection', function(socket) {
   console.log('a user connected');
 
   eventEmitter.on('fenChange', function(fen) {
@@ -180,7 +180,7 @@ client.on('connect', () => {
 
 });
   
-})
+// })
 
 
 http.listen(3000, () => {
