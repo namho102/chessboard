@@ -78,7 +78,7 @@ function processData(str) {
         }
       }
       //2
-      else {
+      else if(movingSquare.length == 2)  {
         // 1 and -1
         // var src = movingSquare.filter(function(ms) {
         //   return ms.val == -1;
@@ -103,7 +103,9 @@ function processData(str) {
         tempPiece = null;
         eventEmitter.emit('fenChange', matrixToFEN(tempFEN));
       }
-
+      else {
+        console.log("overflow");
+      }
       // console.log(tempFEN)
     }
     else console.log('no diff');

@@ -1,5 +1,5 @@
 var SerialPort = require("serialport");
-var port = new SerialPort("/dev/ttyACM1", {
+var port = new SerialPort("/dev/ttyACM0", {
   baudRate: 9600,
   parser: SerialPort.parsers.readline('\n')
 });

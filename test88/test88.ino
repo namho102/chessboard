@@ -1,7 +1,7 @@
 //int row[] = {10, 11, 12, 13, 14, 15, 16, 17};
-int row[] = {8, 9, 10, 11, 12, 13, 14, 15};
+int row[] = {11, 12, 13, 14, 15, 16, 17, 18};
 //int col[] = {2, 3, 4, 5, 6, 7, 8, 9}; // HIGH
-int col[] = {0, 1, 2, 3, 4, 5, 6, 7}; // HIGH
+int col[] = {2, 3, 4, 5, 6, 7, 8, 9}; // HIGH
 int i, j; // Two counter variables to count inside for loop
 int col_scan; // Variable to hold value of scanned columns
 
