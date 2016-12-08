@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-// var mqtt = require('mqtt')  
+// var mqtt = require('mqtt')
 // var client = mqtt.connect('mqtt://broker.hivemq.com')
 var SerialPort = require("serialport");
 var events = require('events');
@@ -12,23 +12,23 @@ var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
 var hostname;
-const initialMatrix = [ [1, 1, 1, 1, 1, 1, 1, 1], 
-                        [1, 1, 1, 1, 1, 1, 1, 1], 
-                        [0, 0, 0, 0, 0, 0, 0, 0], 
-                        [0, 0, 0, 0, 0, 0, 0, 0], 
-                        [0, 0, 0, 0, 0, 0, 0, 0], 
-                        [0, 0, 0, 0, 0, 0, 0, 0], 
+const initialMatrix = [ [1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0],
                         [1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1] ];
 
-const initialFEN  = [ ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], 
-                      ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], 
+const initialFEN  = [ ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                      ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
                       ['1', '1', '1', '1', '1', '1', '1', '1'],
                       ['1', '1', '1', '1', '1', '1', '1', '1'],
                       ['1', '1', '1', '1', '1', '1', '1', '1'],
                       ['1', '1', '1', '1', '1', '1', '1', '1'],
                       ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-                      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]; 
+                      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']];
 
 
 var tempMatrix = initialMatrix;
@@ -42,17 +42,26 @@ var port = new SerialPort("/dev/ttyACM0", {
 
 function processData(str) {
   if(str.length >= 64) {
+
     var len = str.length - 1;
     var size = Math.sqrt(str.length - 1);
     var x = new Array();
+
     for (var i = 0; i < size; i++) {
       x[i] = new Array(size);
     }
 
+    
+
     for (var i = 0; i < len; i++) {
       x[~~(i / size)][i % size] = parseInt(str[i]);
     }
-    // console.log(x);
+    //////////// hot fix //////////////
+    //x[0][5] = 1;
+    //x[1][7] = 1;
+    //////////////////////////////////
+
+
     var movingSquare = subMatrix(x, tempMatrix)
     if(movingSquare.length != 0) {
       tempMatrix = x;
@@ -68,8 +77,8 @@ function processData(str) {
           // else {
           //   killedPiece = tempFEN[ms.X][ms.Y];
           // }
-          
-          
+
+
         }
         else {
           tempFEN[ms.X][ms.Y] = tempPiece;
@@ -105,6 +114,7 @@ function processData(str) {
       }
       else {
         console.log("overflow");
+        tempPiece = null;
       }
       // console.log(tempFEN)
     }
@@ -119,7 +129,7 @@ function subMatrix(x, tempMatrix) {
     for(var j = 0; j < 8; j++) {
       var d = x[i][j] - tempMatrix[i][j];
       if(d != 0) {
-         diff[diff.length] = {val: d, X: i, Y: j}; 
+         diff[diff.length] = {val: d, X: i, Y: j};
       }
     }
 
@@ -169,7 +179,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 app.use(express.static('public'));
 
 
-// client.on('connect', () => {  
+// client.on('connect', () => {
 
 io.on('connection', function(socket) {
   console.log('a user connected');
@@ -178,10 +188,10 @@ io.on('connection', function(socket) {
     // console.log(fen)
     io.emit('fenChange', fen);
   });
-  
+
 
 });
-  
+
 // })
 
 

@@ -27,7 +27,7 @@ function processData(str) {
       x[~~(i / size)][i % size] = parseInt(str[i]);
     }
     console.log(x);
- 
+
 
   }
 }
